@@ -6,6 +6,8 @@ import logonew from "../assets/logo-new.svg";
 import vertalbar from "../assets/vertical-bar.svg";
 import homeevent from "../assets/home-event.svg";
 import Slider from "react-slick";
+
+import { Swiper, SwiperSlide } from "swiper/react";
 const DataFetchingComponent = () => {
   const [data, setData] = useState([]);
   const [data2, setData2] = useState([]);
@@ -14,8 +16,6 @@ const DataFetchingComponent = () => {
 
   const sliderRef = React.useRef(null);
   useEffect(() => {
-    // Make your API calls here
-    // Example: Fetching data from JSONPlaceholder
     fetch("https://api.testvalley.kr/main-banner/all")
       .then((response) => response.json())
       .then((data) => setData(data))
@@ -29,9 +29,15 @@ const DataFetchingComponent = () => {
       .then((response) => response.json())
       .then((data3) => setData3(data3))
       .catch((error) => console.error("Error fetching data:", error));
-    fetch("https://api.testvalley.kr/main-banner/all")
+    fetch("https://api.testvalley.kr/collections?prearrangedDiscount")
       .then((response) => response.json())
-      .then((data4) => setData4(data4))
+      .then((data4) =>
+        setData4(
+          data4.items.filter(
+            (item) => item.viewType === "TILE" && item.type === "SINGLE"
+          )
+        )
+      )
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
   const settings = {
@@ -53,16 +59,17 @@ const DataFetchingComponent = () => {
   return (
     <div>
       <div className="headder  w-4/6 mx-auto flex justify-between items-center py-4">
-        <div className="flex">
+        <div className="flex w-1/4">
           <img src={logonew} alt="log" />
-          <div className="space-y-2">
-            <span class="block w-5 h-0.5 bg-[#00D094]"></span>
-            <span class="block w-5 h-0.5 bg-[#00D094]"></span>
-            <span class="block w-5 h-0.5 bg-[#00D094]"></span>
+          <div className="space-y-1 pl-4 pr-2">
+            <span class="block w-2 h-0.5 p-0 m-0 bg-[#00D094]"></span>
+            <span class="block w-2 h-0.5 p-0 m-0 bg-[#00D094]"></span>
+            <span class="block w-2 h-0.5 p-0 m-0 bg-[#00D094]"></span>
           </div>
+
           <div className="text-[#00D094]">카테고리</div>
         </div>
-        <div>
+        <div className="w-2/4">
           <div class="relative">
             <div class="absolute inset-y-0 start-0 flex items-center ps-3   pointer-events-none">
               <svg
@@ -84,29 +91,35 @@ const DataFetchingComponent = () => {
             <input
               type="search"
               id="default-search"
-              class="block w-full p-3 ps-10 text-sm text-gray-900 border border-gray-300 rounded-sm  focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              class="block p-3  ps-10 text-sm border w-1/2   border-gray-300 rounded-sm  focus:ring-blue-500 focus:border-blue-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="살까말까 고민된다면 검색해보세요!"
               required
             />
           </div>
         </div>
-        <div className="flex">
-          <img src={homeevent} alt="homeevent" />
+        <div className="flex space-x-2  w-1/4">
+          <img src={homeevent} alt="homeevent" height={20} />
           <img src={vertalbar} alt="vertalbar" />
-          <div className="text-[#00D094]">로그인 / 회원가입</div>
+          <div className="">로그인 / 회원가입</div>
         </div>
       </div>
-
+      {/* <View className="flex justify-between items-center mt-4">
+        <Carousel />
+      </View> */}
+      <div className="css-dei9yf"></div>
       <Slider {...settings} ref={sliderRef}>
-        {data.map((item) => (
-          <div className="p-2 m-10" key={item.id}>
-            <img
-              src={item.pcImageUrl}
-              alt={item.pcImageUrl}
-              className="p-2 m-10"
-            />
-          </div>
-        ))}
+        {data
+          .filter((item) => item.viewType === "SINGLE" && item.type === "TILE")
+          .map((item) => (
+            <div className="mb-2" key={item.id}>
+              <img
+                src={item.pcImageUrl}
+                alt={item.pcImageUrl}
+                className="p-2 m-2 w-10/12"
+                height={500}
+              />
+            </div>
+          ))}
       </Slider>
 
       <div className="flex justify-between mt-4 z-2 relative">
@@ -133,14 +146,15 @@ const DataFetchingComponent = () => {
             <img
               src={item.imageUrl}
               alt={item.imageUrl}
-              className=""
+              className="ml-2"
               height={40}
-              width={600}
+              width={60}
             />
             <div>{item.title}</div>
           </div>
         ))}
       </div>
+
       <div>
         <div></div>
         <div className="flex">
@@ -150,13 +164,37 @@ const DataFetchingComponent = () => {
                 src={item.pcImageUrl}
                 alt={item.pcImageUrl}
                 className="p-2 m-2"
-                height={400}
-                width={340}
+                height={300}
+                width={240}
               />
               <div>{item.title}</div>
             </div>
           ))}
         </div>
+      </div>
+      <div className="flex-none items-center justify-center w-5/6">
+        {data4.map((item) => (
+          <div className="flex" key={item.id}>
+            <div className="p-2 m-2   w-60 flex-none items-start ">
+              <div className="text-xl font-bold text-start ">{item.title}</div>
+              <div className="text-md text-start text-gray-400">
+                {item.subtitle}
+              </div>
+            </div>
+
+            <div className="flex">
+              {item.items.map((itemDetail) => (
+                <div>
+                  <img
+                    src={itemDetail.publication.media[0].uri}
+                    alt={itemDetail.publication.media[0].uri}
+                  />
+                  <div>{itemDetail.publication.productName}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
