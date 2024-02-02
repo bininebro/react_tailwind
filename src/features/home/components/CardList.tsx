@@ -1,29 +1,21 @@
 import { Swiper, SwiperSlide, useSwiper } from "swiper/react"
 import { Autoplay, Pagination, Navigation } from "swiper/modules"
-import type {
-  Item,
-  Item2,
-  Items2,
-  Items3,
-  Items4,
-  Items5,
-  Items6,
-  Items7,
-  Items8,
-  Items9,
-} from "../models/types"
+import type { Item, Item2 } from "../models/types"
 
 import "swiper/css"
 import "swiper/css/pagination"
 import "swiper/css/navigation"
 
 import "swiper/swiper-bundle.css"
+import { useEffect, useRef } from "react"
 
 interface CardProp {
   items: Item2
 }
 
 export const CardList = ({ items }: CardProp) => {
+  const sliderRef = useRef<any>(null)
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8  ">
       <div className="md:flex mt-[56px] relative ">
@@ -35,14 +27,11 @@ export const CardList = ({ items }: CardProp) => {
             {items && items.subtitle}
           </p>
         </div>
+        <SwiperCustomNavButtons
+          onslideNext={() => sliderRef.current?.slideNext()}
+          onslidePrev={() => sliderRef.current?.slidePrev()}
+        />
 
-        <div className="grid grid-cols-2 gap-4 mt-6 md:hidden">
-          {items &&
-            items.items.map(item => {
-              return <ProductCard item={item} />
-            })}
-        </div>
-        <SwiperCustomNavButtons />
         <Swiper
           spaceBetween={30}
           slidesPerView={4}
@@ -50,6 +39,7 @@ export const CardList = ({ items }: CardProp) => {
             delay: 2500,
           }}
           modules={[Autoplay, Pagination, Navigation]}
+          onSwiper={it => (sliderRef.current = it)}
           className="hidden md:block"
         >
           {items &&
@@ -69,11 +59,14 @@ export const CardList = ({ items }: CardProp) => {
   )
 }
 
-export const SwiperCustomNavButtons = () => {
+export const SwiperCustomNavButtons = (param: {
+  onslideNext: () => void
+  onslidePrev: () => void
+}) => {
   const swiper = useSwiper()
   return (
     <div className="absolute bottom-0 left-0 z-50 text-grayTextColor">
-      <button onClick={() => swiper.slidePrev()}>
+      <button onClick={() => param.onslidePrev()}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -89,7 +82,7 @@ export const SwiperCustomNavButtons = () => {
           />
         </svg>
       </button>
-      <button onClick={() => swiper.slideNext()}>
+      <button onClick={() => param.onslideNext()}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -110,16 +103,7 @@ export const SwiperCustomNavButtons = () => {
 }
 
 interface ProductCardProps {
-  item:
-    | Item
-    | Items2
-    | Items3
-    | Items4
-    | Items5
-    | Items6
-    | Items7
-    | Items8
-    | Items9
+  item: Item
 }
 
 export const ProductCard = ({ item }: ProductCardProps) => {
